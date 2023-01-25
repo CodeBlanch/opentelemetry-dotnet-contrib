@@ -51,6 +51,7 @@ public class UnixDomainSocketDataTransportTests
                     }))))
                 {
                     serverConnectedSocket = server.Accept();
+                    serverConnectedSocket.ReceiveTimeout = 4000;
 
                     var firstBytesReceived = serverConnectedSocket.Receive(buffer);
                     Assert.Equal(0, firstBytesReceived);
