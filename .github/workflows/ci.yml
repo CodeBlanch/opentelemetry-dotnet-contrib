@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: [ 'main*', 'instrumentation*', 'exporter*', 'extensions*' ]
+    branches: [ '*' ]
     paths-ignore:
     - '**.md'
   pull_request:
