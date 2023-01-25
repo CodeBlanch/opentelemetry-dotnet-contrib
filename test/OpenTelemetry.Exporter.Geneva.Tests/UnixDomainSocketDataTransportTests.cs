@@ -35,7 +35,11 @@ public class UnixDomainSocketDataTransportTests
             string path = GetRandomFilePath();
             try
             {
-                using var server = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.IP);
+                using var server = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.IP)
+                {
+                    ReceiveTimeout = 4000,
+                };
+
                 server.Bind(new UnixDomainSocketEndPoint(path));
                 server.Listen(1);
 
