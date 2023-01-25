@@ -38,12 +38,16 @@ public class UnixDomainSocketDataTransportTests
                 server.Bind(new UnixDomainSocketEndPoint(path));
                 server.Listen(1);
 
+                Socket serverConnectedSocket = null;
+
                 using (var loggerFactory = LoggerFactory.Create(builder => builder
                     .AddOpenTelemetry(options => options.AddGenevaLogExporter(configure =>
                     {
                         configure.ConnectionString = $"Endpoint=unix:{path}";
                     }))))
                 {
+                    serverConnectedSocket = server.Accept();
+
                     var logger = loggerFactory.CreateLogger("MyLogCategory");
 
                     logger.LogInformation("Message1");
@@ -53,7 +57,11 @@ public class UnixDomainSocketDataTransportTests
                     logger.LogInformation("Message5");
                 }
 
-                throw new InvalidOperationException(Convert.ToBase64String(File.ReadAllBytes(path)));
+                byte[] buffer = new byte[4096];
+                int bytesReceived = serverConnectedSocket.Receive(buffer);
+                serverConnectedSocket.Dispose();
+
+                throw new InvalidOperationException(Convert.ToBase64String(buffer, 0, bytesReceived));
             }
             finally
             {
