@@ -26,10 +26,8 @@ namespace OpenTelemetry.Exporter.Geneva.Tests;
 
 public class UnixDomainSocketDataTransportTests
 {
-    [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void UnixDomainSocket_ShutdownDispose_Test(bool shutdown)
+    [Fact]
+    public void UnixDomainSocket_ShutdownDispose_Test()
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
