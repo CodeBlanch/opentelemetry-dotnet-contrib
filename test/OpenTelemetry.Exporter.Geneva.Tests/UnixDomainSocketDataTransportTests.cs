@@ -34,6 +34,10 @@ public class UnixDomainSocketDataTransportTests
             string path = GetRandomFilePath();
             try
             {
+                using var server = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.IP);
+                server.Bind(new UnixDomainSocketEndPoint(path));
+                server.Listen(1);
+
                 using (var loggerFactory = LoggerFactory.Create(builder => builder
                     .AddOpenTelemetry(options => options.AddGenevaLogExporter(configure =>
                     {
