@@ -52,7 +52,7 @@ public class UnixDomainSocketDataTransportTests
 
                 using Socket serverAcceptedSocket = server.Accept();
 
-                var requestData = Encoding.UTF8.GetBytes("Hello world!");
+                var requestData = new byte[256];
 
                 client.Send(requestData);
                 client.Send(requestData);
