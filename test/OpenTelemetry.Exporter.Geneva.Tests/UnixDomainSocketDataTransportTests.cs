@@ -16,11 +16,10 @@
 
 using System;
 using System.IO;
-using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace OpenTelemetry.Exporter.Geneva.Tests;
@@ -35,6 +34,37 @@ public class UnixDomainSocketDataTransportTests
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             string path = GetRandomFilePath();
+            try
+            {
+                using (var loggerFactory = LoggerFactory.Create(builder => builder
+                    .AddOpenTelemetry(options => options.AddGenevaLogExporter(configure =>
+                    {
+                        configure.ConnectionString = $"Endpoint=unix:{path}";
+                    }))))
+                {
+                    var logger = loggerFactory.CreateLogger("MyLogCategory");
+
+                    logger.LogInformation("Message1");
+                    logger.LogInformation("Message2");
+                    logger.LogInformation("Message3");
+                    logger.LogInformation("Message4");
+                    logger.LogInformation("Message5");
+                }
+
+                throw new InvalidOperationException(Convert.ToBase64String(File.ReadAllBytes(path)));
+            }
+            finally
+            {
+                try
+                {
+                    File.Delete(path);
+                }
+                catch
+                {
+                }
+            }
+
+            /*string path = GetRandomFilePath();
             var endpoint = new UnixDomainSocketEndPoint(path);
             try
             {
@@ -81,7 +111,7 @@ public class UnixDomainSocketDataTransportTests
                 catch
                 {
                 }
-            }
+            }*/
         }
     }
 
