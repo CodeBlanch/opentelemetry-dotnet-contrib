@@ -31,6 +31,7 @@ public class UnixDomainSocketDataTransportTests
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
+            Socket serverConnectedSocket = null;
             byte[] buffer = new byte[4096];
             string path = GetRandomFilePath();
             try
@@ -42,8 +43,6 @@ public class UnixDomainSocketDataTransportTests
 
                 server.Bind(new UnixDomainSocketEndPoint(path));
                 server.Listen(1);
-
-                Socket serverConnectedSocket = null;
 
                 using (var loggerFactory = LoggerFactory.Create(builder => builder
                     .AddOpenTelemetry(options => options.AddGenevaLogExporter(configure =>
@@ -66,12 +65,13 @@ public class UnixDomainSocketDataTransportTests
                 }
 
                 var secondBytesReceived = serverConnectedSocket.Receive(buffer);
-                serverConnectedSocket.Dispose();
 
                 throw new InvalidOperationException(Convert.ToBase64String(buffer, 0, secondBytesReceived));
             }
             finally
             {
+                serverConnectedSocket?.Dispose();
+
                 try
                 {
                     File.Delete(path);
