@@ -16,15 +16,75 @@
 
 using System;
 using System.IO;
+using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 using Xunit;
 
 namespace OpenTelemetry.Exporter.Geneva.Tests;
 
 public class UnixDomainSocketDataTransportTests
 {
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void UnixDomainSocket_ShutdownDispose_Test(bool shutdown)
+    {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            string path = GetRandomFilePath();
+            var endpoint = new UnixDomainSocketEndPoint(path);
+            try
+            {
+                using var server = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.IP);
+
+                server.Bind(endpoint);
+                server.Listen(1);
+
+                var client = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.IP)
+                {
+                    SendTimeout = 15000,
+                };
+
+                client.Connect(endpoint);
+
+                using Socket serverAcceptedSocket = server.Accept();
+
+                var requestData = Encoding.UTF8.GetBytes("Hello world!");
+
+                client.Send(requestData);
+                client.Send(requestData);
+                client.Send(requestData);
+                client.Send(requestData);
+                client.Send(requestData);
+
+                if (shutdown)
+                {
+                    client.Shutdown(SocketShutdown.Both);
+                }
+
+                client.Dispose();
+
+                var receivedData = new byte[4096];
+                var bytesReceived = serverAcceptedSocket.Receive(receivedData);
+
+                Assert.Equal(requestData.Length * 5, bytesReceived);
+            }
+            finally
+            {
+                try
+                {
+                    File.Delete(path);
+                }
+                catch
+                {
+                }
+            }
+        }
+    }
+
     [Fact]
     public void UnixDomainSocketDataTransport_Success_Linux()
     {
