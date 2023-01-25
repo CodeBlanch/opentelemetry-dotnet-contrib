@@ -31,6 +31,7 @@ public class UnixDomainSocketDataTransportTests
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
+            byte[] buffer = new byte[4096];
             string path = GetRandomFilePath();
             try
             {
@@ -48,6 +49,9 @@ public class UnixDomainSocketDataTransportTests
                 {
                     serverConnectedSocket = server.Accept();
 
+                    var firstBytesReceived = serverConnectedSocket.Receive(buffer);
+                    Assert.Equal(0, firstBytesReceived);
+
                     var logger = loggerFactory.CreateLogger("MyLogCategory");
 
                     logger.LogInformation("Message1");
@@ -57,11 +61,10 @@ public class UnixDomainSocketDataTransportTests
                     logger.LogInformation("Message5");
                 }
 
-                byte[] buffer = new byte[4096];
-                int bytesReceived = serverConnectedSocket.Receive(buffer);
+                var secondBytesReceived = serverConnectedSocket.Receive(buffer);
                 serverConnectedSocket.Dispose();
 
-                throw new InvalidOperationException(Convert.ToBase64String(buffer, 0, bytesReceived));
+                throw new InvalidOperationException(Convert.ToBase64String(buffer, 0, secondBytesReceived));
             }
             finally
             {
