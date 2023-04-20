@@ -30,7 +30,7 @@ namespace OpenTelemetry.Instrumentation.StackExchangeRedis;
 /// <summary>
 /// Redis calls instrumentation.
 /// </summary>
-internal class StackExchangeRedisCallsInstrumentation : IDisposable
+internal class StackExchangeRedisCallsInstrumentation : StackExchangeRedisInstrumentation, IDisposable
 {
     internal const string RedisDatabaseIndexKeyName = "db.redis.database_index";
     internal const string RedisFlagsKeyName = "db.redis.flags";
@@ -59,8 +59,6 @@ internal class StackExchangeRedisCallsInstrumentation : IDisposable
     /// <param name="options">Configuration options for redis instrumentation.</param>
     public StackExchangeRedisCallsInstrumentation(IConnectionMultiplexer connection, StackExchangeRedisCallsInstrumentationOptions options)
     {
-        Guard.ThrowIfNull(connection);
-
         this.options = options ?? new StackExchangeRedisCallsInstrumentationOptions();
 
         this.drainThread = new Thread(this.DrainEntries)
@@ -69,6 +67,16 @@ internal class StackExchangeRedisCallsInstrumentation : IDisposable
             IsBackground = true,
         };
         this.drainThread.Start();
+
+        if (connection != null)
+        {
+            this.AddConnection(connection);
+        }
+    }
+
+    public override void AddConnection(IConnectionMultiplexer connection)
+    {
+        Guard.ThrowIfNull(connection);
 
         connection.RegisterProfiler(this.GetProfilerSessionsFactory());
     }
