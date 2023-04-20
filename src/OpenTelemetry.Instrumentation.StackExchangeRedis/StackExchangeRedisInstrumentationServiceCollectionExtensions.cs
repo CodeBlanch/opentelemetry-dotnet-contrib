@@ -28,18 +28,27 @@ public static class StackExchangeRedisInstrumentationServiceCollectionExtensions
     {
         Guard.ThrowIfNull(instrumenationCreatedAction);
 
-        return services.AddRedisInstrumentationCreatedAction((n, i) => instrumenationCreatedAction(i));
+        return services.AddRedisInstrumentationCreatedAction((sp, n, i) => instrumenationCreatedAction(i));
     }
 
     public static IServiceCollection AddRedisInstrumentationCreatedAction(
         this IServiceCollection services,
         Action<string, StackExchangeRedisInstrumentation> instrumenationCreatedAction)
     {
+        Guard.ThrowIfNull(instrumenationCreatedAction);
+
+        return services.AddRedisInstrumentationCreatedAction((sp, n, i) => instrumenationCreatedAction(n, i));
+    }
+
+    public static IServiceCollection AddRedisInstrumentationCreatedAction(
+        this IServiceCollection services,
+        Action<IServiceProvider, string, StackExchangeRedisInstrumentation> instrumenationCreatedAction)
+    {
         Guard.ThrowIfNull(services);
         Guard.ThrowIfNull(instrumenationCreatedAction);
 
-        services.AddSingleton<StackExchangeRedisInstrumentationAction>(
-            (n, i) => instrumenationCreatedAction(n, i));
+        services.AddSingleton<StackExchangeRedisInstrumentationAction>(sp =>
+            (n, i) => instrumenationCreatedAction(sp, n, i));
 
         return services;
     }
