@@ -2,89 +2,58 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
-using System.Configuration;
 using System.Web;
 using System.Web.Http;
-using System.Web.Mvc;
-using System.Web.Routing;
-using OpenTelemetry;
-using OpenTelemetry.Exporter;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Trace;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Examples.AspNet;
 
-#pragma warning disable SA1649 // File name should match first type name
-public class WebApiApplication : HttpApplication
-#pragma warning restore SA1649 // File name should match first type name
+public partial class WebApiApplication : HttpApplication
 {
-    private TracerProvider? tracerProvider;
-    private MeterProvider? meterProvider;
+    private static ServiceProvider? serviceProvider;
+
+    public static IServiceProvider ServiceProvider => serviceProvider
+        ?? throw new InvalidOperationException("ServiceProvider cannot be accessed before the application has started.");
+
+    public static ILogger<T> GetLogger<T>()
+        => ServiceProvider.GetRequiredService<ILogger<T>>();
 
     protected void Application_Start()
     {
-        var builder = Sdk.CreateTracerProviderBuilder()
-             .AddAspNetInstrumentation()
-             .AddHttpClientInstrumentation();
+        var services = new ServiceCollection();
 
-        switch (ConfigurationManager.AppSettings["UseExporter"].ToUpperInvariant())
-        {
-            case "ZIPKIN":
-                builder.AddZipkinExporter(zipkinOptions =>
-                {
-                    zipkinOptions.Endpoint = new Uri(ConfigurationManager.AppSettings["ZipkinEndpoint"]);
-                });
-                break;
-            case "OTLP":
-                builder.AddOtlpExporter(otlpOptions =>
-                    {
-                        otlpOptions.Endpoint = new Uri(ConfigurationManager.AppSettings["OtlpEndpoint"]);
-                    });
-                break;
-            default:
-                builder.AddConsoleExporter(options => options.Targets = ConsoleExporterOutputTargets.Debug);
-                break;
-        }
+        // Configure OpenTelemetry services
+        ServiceConfig.ConfigureServices(services);
 
-        this.tracerProvider = builder.Build();
+        serviceProvider = services.BuildServiceProvider();
 
-        // Metrics
-        // Note: Tracerprovider is needed for metrics to work
-        // https://github.com/open-telemetry/opentelemetry-dotnet/issues/2994
+        // Start OpenTelemetry services
+        ServiceConfig.ConfigureApplication(serviceProvider);
 
-        var meterBuilder = Sdk.CreateMeterProviderBuilder()
-             .AddAspNetInstrumentation();
-
-        switch (ConfigurationManager.AppSettings["UseMetricsExporter"].ToUpperInvariant())
-        {
-            case "OTLP":
-                meterBuilder.AddOtlpExporter(otlpOptions =>
-                {
-                    otlpOptions.Endpoint = new Uri(ConfigurationManager.AppSettings["OtlpEndpoint"]);
-                });
-                break;
-            case "PROMETHEUS":
-                meterBuilder.AddPrometheusHttpListener();
-                break;
-            default:
-                meterBuilder.AddConsoleExporter((exporterOptions, metricReaderOptions) =>
-                {
-                    exporterOptions.Targets = ConsoleExporterOutputTargets.Debug;
-                });
-                break;
-        }
-
-        this.meterProvider = meterBuilder.Build();
-
+        // Configure WebAPI
         GlobalConfiguration.Configure(WebApiConfig.Register);
 
-        AreaRegistration.RegisterAllAreas();
-        RouteConfig.RegisterRoutes(RouteTable.Routes);
+        // Configure MVC
+        MvcConfig.Configure();
+
+        Logs.ApplicationStarted(GetLogger<WebApiApplication>());
     }
 
     protected void Application_End()
     {
-        this.tracerProvider?.Dispose();
-        this.meterProvider?.Dispose();
+        Logs.ApplicationStopping(GetLogger<WebApiApplication>());
+
+        // Dispose OpenTelemetry services and flush anything in memory
+        serviceProvider?.Dispose();
+    }
+
+    private static partial class Logs
+    {
+        [LoggerMessage(LogLevel.Information, "Application started")]
+        public static partial void ApplicationStarted(ILogger logger);
+
+        [LoggerMessage(LogLevel.Information, "Application stopping")]
+        public static partial void ApplicationStopping(ILogger logger);
     }
 }

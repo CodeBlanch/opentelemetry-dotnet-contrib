@@ -11,20 +11,30 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Examples.AspNet.Models;
+using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 
 namespace Examples.AspNet.Controllers;
 
-public class WeatherForecastController : ApiController
+public partial class WeatherForecastController : ApiController
 {
     private static readonly string[] Summaries = new[]
     {
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching",
     };
 
+    private readonly ILogger<WeatherForecastController> logger;
+
+    public WeatherForecastController(ILogger<WeatherForecastController> logger)
+    {
+        this.logger = logger;
+    }
+
     [HttpGet] // For testing traditional routing. Ex: https://localhost:XXXX/api/weatherforecast
     public async Task<IEnumerable<WeatherForecast>> Get()
     {
+        Logs.GetWeatherForecasts(this.logger);
+
         // Build some dependency spans.
 
         await RequestGoogleHomPageViaHttpClient().ConfigureAwait(false);
@@ -42,6 +52,8 @@ public class WeatherForecastController : ApiController
     [HttpGet]
     public async Task<IEnumerable<WeatherForecast>> Get(int customerId)
     {
+        Logs.GetWeatherForecastsForCustomer(this.logger, customerId);
+
         if (customerId < 0)
         {
             throw new ArgumentOutOfRangeException(nameof(customerId), "CustomerId should be 0 or greater.");
@@ -213,5 +225,14 @@ public class WeatherForecastController : ApiController
         }
 
         return new(rawUri);
+    }
+
+    private static partial class Logs
+    {
+        [LoggerMessage(LogLevel.Information, "GetWeatherForecasts called")]
+        public static partial void GetWeatherForecasts(ILogger logger);
+
+        [LoggerMessage(LogLevel.Information, "GetWeatherForecasts called for CustomerId: {CustomerId}.")]
+        public static partial void GetWeatherForecastsForCustomer(ILogger logger, int customerId);
     }
 }
