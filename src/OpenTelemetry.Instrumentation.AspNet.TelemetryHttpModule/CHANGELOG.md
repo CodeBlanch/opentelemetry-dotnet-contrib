@@ -5,12 +5,16 @@
 * Update `OpenTelemetry.Api` to `1.8.1`.
   ([#1668](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1668))
 
+* Updated OpenTelemetry SDK version to `1.9.0`.
+  ([#22](https://github.com/CodeBlanch/opentelemetry-dotnet-contrib/pull/22))
+
 ## 1.8.0-beta.1
 
 Released 2024-Apr-05
 
 * `Meter.Version` is set to NuGet package version.
   ([#1624](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1624))
+
 * Update `OpenTelemetry.Api` to `1.8.0`.
   ([#1635](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1635))
 
@@ -135,3 +139,4 @@ Released 2021-Oct-08
 * TelemetryHttpModule will now restore Baggage on .NET 4.7.1+ runtimes when IIS
   switches threads
   ([#2314](https://github.com/open-telemetry/opentelemetry-dotnet/pull/2314))
+

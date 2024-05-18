@@ -11,5 +11,4 @@ Initial release of `OpenTelemetry.Sampler.AWS`.
 * Make OpenTelemetry.Sampler.AWS native AoT compatible.
   ([#1541](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1541))
 
-* Update OpenTelemetry SDK version to `1.8.1`.
-  ([#1668](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1668))
+

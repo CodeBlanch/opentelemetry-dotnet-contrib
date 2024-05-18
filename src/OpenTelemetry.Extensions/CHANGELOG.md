@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+* Updated OpenTelemetry SDK version to `1.9.0`.
+  ([#22](https://github.com/CodeBlanch/opentelemetry-dotnet-contrib/pull/22))
+
 ## 1.0.0-beta.5
 
 Released 2024-May-08
@@ -51,3 +54,4 @@ Released 2022-Nov-09
 * This is the first release of `OpenTelemetry.Contrib.Preview` package.
 
 For more details, please refer to the [README](README.md).
+
