@@ -5,10 +5,12 @@
 * Implement support for cloud.{account.id,availability_zone,region} attributes in
   AWS ECS detector.
   ([#1552](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1552))
+
 * Implement support for `cloud.resource_id` attribute in AWS ECS detector.
   ([#1576](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1576))
-* Update OpenTelemetry SDK version to `1.8.1`.
-  ([#1668](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1668))
+
+* Updated OpenTelemetry core component version(s) to `1.9.0`.
+  ([#26](https://github.com/CodeBlanch/opentelemetry-dotnet-contrib/pull/26))
 
 ## 1.4.0-beta.1
 
@@ -16,10 +18,13 @@ Released 2024-Jan-26
 
 * Update OpenTelemetry SDK version to `1.7.0`.
   ([#1486](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1486))
+
 * Fix AWS EBS Resource Detector working on linux.
   ([#1350](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1350))
+
 * BREAKING: All Resource Detector classes marked as `sealed`.
   ([#1510](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1510))
+
 * Make OpenTelemetry.ResourceDetectors.AWS native AoT compatible.
   ([#1541](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1541))
 
