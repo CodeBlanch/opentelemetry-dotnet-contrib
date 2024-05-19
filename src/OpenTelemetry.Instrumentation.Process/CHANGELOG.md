@@ -12,12 +12,16 @@
 * Update `OpenTelemetry.Api` to `1.8.1`.
   ([#1668](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1668))
 
+* Updated OpenTelemetry core component version(s) to `1.9.0`.
+  ([#24](https://github.com/CodeBlanch/opentelemetry-dotnet-contrib/pull/24))
+
 ## 0.5.0-beta.5
 
 Released 2024-Apr-05
 
 * `Meter.Version` is set to NuGet package version.
   ([#1624](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1624))
+
 * Update `OpenTelemetry.Api` to `1.8.0`.
   ([#1635](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1635))
 
@@ -120,3 +124,4 @@ Released 2022-Oct-14
 * This is the first release of `OpenTelemetry.Instrumentation.Process` package.
 
 For more details, please refer to the [README](README.md).
+

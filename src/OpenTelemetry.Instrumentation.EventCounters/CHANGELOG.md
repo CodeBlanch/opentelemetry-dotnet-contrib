@@ -4,8 +4,12 @@
 
 * `Meter.Version` is set to NuGet package version.
   ([#1624](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1624))
+
 * Update `OpenTelemetry.Api` to `1.8.1`.
   ([#1668](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1668))
+
+* Updated OpenTelemetry core component version(s) to `1.9.0`.
+  ([#24](https://github.com/CodeBlanch/opentelemetry-dotnet-contrib/pull/24))
 
 ## 1.5.1-alpha.1
 
@@ -30,6 +34,7 @@ e.g.: <https://github.com/open-telemetry/opentelemetry-dotnet-contrib/issues/102
 Released 2022-Nov-10
 
 * Update OpenTelemetry.Api to 1.3.1.
+
 * Change `EventCounter` prefix to `ec` and trim the event source name to keep
   instrument name under 63 characters.
   ([#740](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/740))
@@ -49,3 +54,4 @@ Released 2022-Jul-12
 * This is the first release of `OpenTelemetry.Instrumentation.EventCounters` package.
 
 For more details, please refer to the [README](README.md).
+
