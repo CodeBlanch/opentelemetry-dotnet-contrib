@@ -5,11 +5,13 @@
 * **Breaking Change**: Renamed package from `OpenTelemetry.ResourceDetectors.ProcessRuntime`
   to `OpenTelemetry.Resources.ProcessRuntime`.
   ([#1767](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1767))
+
 * **Breaking Change**: `ProcessRuntimeDetector` type is now internal, use `ResourceBuilder`
   extension method `AddProcessRuntimeDetector` to enable the detector.
   ([#1767](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1767))
-* Update OpenTelemetry SDK version to `1.8.1`.
-  ([#1668](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1668))
+
+* Updated OpenTelemetry core component version(s) to `1.9.0`.
+  ([#29](https://github.com/CodeBlanch/opentelemetry-dotnet-contrib/pull/29))
 
 ## 0.1.0-alpha.3
 
