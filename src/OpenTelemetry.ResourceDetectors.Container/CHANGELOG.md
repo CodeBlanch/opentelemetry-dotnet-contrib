@@ -2,8 +2,8 @@
 
 ## Unreleased
 
-* Update OpenTelemetry SDK version to `1.8.1`.
-  ([#1668](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1668))
+* Updated OpenTelemetry core component version(s) to `1.9.0`.
+  ([#25](https://github.com/CodeBlanch/opentelemetry-dotnet-contrib/pull/25))
 
 ## 1.0.0-beta.7
 
@@ -51,6 +51,7 @@ Released 2023-Apr-7
     OpenTelemetry.ResourceDetectors.Container`)
     and the class name (`DockerResourceDetector` to `ContainerResourceDetector`).
   ([#1123](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1123))
+
 * Updates to 1.4.0 of OpenTelemetry SDK.
   ([#1038](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1038))
 

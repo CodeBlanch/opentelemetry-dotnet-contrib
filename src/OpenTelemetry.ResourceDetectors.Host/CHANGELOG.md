@@ -5,8 +5,9 @@
 * Adds support for `host.id` resource attribute on non-containerized systems.
 `host.id` will be set per [semantic convention rules](https://github.com/open-telemetry/semantic-conventions/blob/v1.24.0/docs/resource/host.md)
   ([#1631](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1631))
-* Update OpenTelemetry SDK version to `1.8.1`.
-  ([#1668](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1668))
+
+* Updated OpenTelemetry core component version(s) to `1.9.0`.
+  ([#25](https://github.com/CodeBlanch/opentelemetry-dotnet-contrib/pull/25))
 
 ## 0.1.0-alpha.3
 

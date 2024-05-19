@@ -2,8 +2,8 @@
 
 ## Unreleased
 
-* Update OpenTelemetry SDK version to `1.8.1`.
-  ([#1668](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1668))
+* Updated OpenTelemetry core component version(s) to `1.9.0`.
+  ([#25](https://github.com/CodeBlanch/opentelemetry-dotnet-contrib/pull/25))
 
 ## 1.0.0-beta.11
 
@@ -19,6 +19,7 @@ Released 2024-Feb-07
 * **Breaking Change**: Stop emitting `db.statement_type` attribute.
   This attribute never was part of the [semantic convention](https://github.com/open-telemetry/semantic-conventions/blob/v1.24.0/docs/database/database-spans.md#call-level-attributes).
   ([#1559](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1559))
+
 * `ActivitySource.Version` is set to NuGet package version.
   ([#1624](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1624))
 
