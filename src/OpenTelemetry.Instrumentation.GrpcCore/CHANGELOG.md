@@ -4,17 +4,25 @@
 
 * Make the context propagation extraction case insensitive.
   ([#483](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/483))
+
 * Update minimal supported  version of `Google.Protobuf` to `3.15.0`.
   ([#1456](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1456))
+
 * `ActivitySource.Version` is set to NuGet package version.
   ([#1624](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1624))
+
 * Update `OpenTelemetry.Api` to `1.8.1`.
   ([#1668](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1668))
+
 * `RecordException` option for both client and server interceptors.
   ([#1648](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1648))
+
 * Use `Activity.Status` and `Activity.StatusDescription`
   instead of `otel.status_code` and `otel.status_description` tags.
   ([#1799](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/pull/1799))
+
+* Updated OpenTelemetry core component version(s) to `1.9.0`.
+  ([#30](https://github.com/CodeBlanch/opentelemetry-dotnet-contrib/pull/30))
 
 ## 1.0.0-beta.5
 
