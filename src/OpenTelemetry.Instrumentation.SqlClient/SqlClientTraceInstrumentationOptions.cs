@@ -17,6 +17,14 @@ namespace OpenTelemetry.Instrumentation.SqlClient;
 /// </remarks>
 public class SqlClientTraceInstrumentationOptions
 {
+    internal static Func<bool>? SetDbStatementForTextRoot;
+    internal static Func<bool>? EnableConnectionLevelAttributesRoot;
+    internal static Action<Activity, string, object>? EnrichRoot;
+    internal static Func<object, bool>? FilterRoot;
+    internal static Func<bool>? RecordExceptionRoot;
+    internal static Func<bool>? EmitOldAttributesRoot;
+    internal static Func<bool>? EmitNewAttributesRoot;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="SqlClientTraceInstrumentationOptions"/> class.
     /// </summary>
@@ -146,4 +154,83 @@ public class SqlClientTraceInstrumentationOptions
     /// Gets or sets a value indicating whether the new database attributes should be emitted.
     /// </summary>
     internal bool EmitNewAttributes { get; set; }
+
+    internal IDisposable Apply()
+    {
+        var dbStatement = () => this.SetDbStatementForText;
+        var connection = () => this.EnableConnectionLevelAttributes;
+        var recordException = () => this.RecordException;
+        var emitOld = () => this.EmitOldAttributes;
+        var emitNew = () => this.EmitNewAttributes;
+
+        SetDbStatementForTextRoot += dbStatement;
+        EnableConnectionLevelAttributesRoot += connection;
+        EnrichRoot += this.Enrich;
+        FilterRoot += this.Filter;
+        RecordExceptionRoot += recordException;
+        EmitOldAttributesRoot += emitOld;
+        EmitNewAttributesRoot += emitNew;
+
+        return new Unapply(() =>
+        {
+            SetDbStatementForTextRoot -= dbStatement;
+            EnableConnectionLevelAttributesRoot -= connection;
+            EnrichRoot -= this.Enrich;
+            FilterRoot -= this.Filter;
+            RecordExceptionRoot -= recordException;
+            EmitOldAttributesRoot -= emitOld;
+            EmitNewAttributesRoot -= emitNew;
+        });
+    }
+
+    internal static bool IsAnyTrue(Func<bool>? conditionRoot)
+    {
+        if (conditionRoot == null)
+        {
+            return false;
+        }
+
+        foreach (var condition in conditionRoot.GetInvocationList())
+        {
+            if (((Func<bool>)condition)())
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    internal static bool ShouldDrop(object state)
+    {
+        if (FilterRoot == null)
+        {
+            return false;
+        }
+
+        foreach (var condition in FilterRoot.GetInvocationList())
+        {
+            if (!((Func<object, bool>)condition)(state))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private sealed class Unapply : IDisposable
+    {
+        private readonly Action dispose;
+
+        public Unapply(Action dispose)
+        {
+            this.dispose = dispose;
+        }
+
+        public void Dispose()
+        {
+            this.dispose();
+        }
+    }
 }

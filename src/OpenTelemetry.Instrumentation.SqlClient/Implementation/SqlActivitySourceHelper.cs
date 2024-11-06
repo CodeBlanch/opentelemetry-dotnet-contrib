@@ -21,7 +21,7 @@ internal sealed class SqlActivitySourceHelper
     public static readonly string ActivitySourceName = AssemblyName.Name!;
     public static readonly ActivitySource ActivitySource = new(ActivitySourceName, Assembly.GetPackageVersion());
 
-    public static TagList GetTagListFromConnectionInfo(string? dataSource, string? databaseName, SqlClientTraceInstrumentationOptions options, out string activityName)
+    public static TagList GetTagListFromConnectionInfo(string? dataSource, string? databaseName, out string activityName)
     {
         activityName = MicrosoftSqlServerDatabaseSystemName;
 
@@ -30,17 +30,20 @@ internal sealed class SqlActivitySourceHelper
             { SemanticConventions.AttributeDbSystem, MicrosoftSqlServerDatabaseSystemName },
         };
 
-        if (options.EnableConnectionLevelAttributes && dataSource != null)
+        if (SqlClientTraceInstrumentationOptions.IsAnyTrue(SqlClientTraceInstrumentationOptions.EnableConnectionLevelAttributesRoot)
+            && dataSource != null)
         {
             var connectionDetails = SqlConnectionDetails.ParseFromDataSource(dataSource);
 
-            if (options.EmitOldAttributes && !string.IsNullOrEmpty(databaseName))
+            if (SqlClientTraceInstrumentationOptions.IsAnyTrue(SqlClientTraceInstrumentationOptions.EmitOldAttributesRoot)
+                && !string.IsNullOrEmpty(databaseName))
             {
                 tags.Add(SemanticConventions.AttributeDbName, databaseName);
                 activityName = databaseName!;
             }
 
-            if (options.EmitNewAttributes && !string.IsNullOrEmpty(databaseName))
+            if (SqlClientTraceInstrumentationOptions.IsAnyTrue(SqlClientTraceInstrumentationOptions.EmitNewAttributesRoot)
+                && !string.IsNullOrEmpty(databaseName))
             {
                 var dbNamespace = !string.IsNullOrEmpty(connectionDetails.InstanceName)
                     ? $"{connectionDetails.InstanceName}.{databaseName}" // TODO: Refactor SqlConnectionDetails to include database to avoid string allocation here.
@@ -66,19 +69,20 @@ internal sealed class SqlActivitySourceHelper
                 }
             }
 
-            if (options.EmitOldAttributes && !string.IsNullOrEmpty(connectionDetails.InstanceName))
+            if (SqlClientTraceInstrumentationOptions.IsAnyTrue(SqlClientTraceInstrumentationOptions.EmitOldAttributesRoot)
+                && !string.IsNullOrEmpty(connectionDetails.InstanceName))
             {
                 tags.Add(SemanticConventions.AttributeDbMsSqlInstanceName, connectionDetails.InstanceName);
             }
         }
         else if (!string.IsNullOrEmpty(databaseName))
         {
-            if (options.EmitNewAttributes)
+            if (SqlClientTraceInstrumentationOptions.IsAnyTrue(SqlClientTraceInstrumentationOptions.EmitNewAttributesRoot))
             {
                 tags.Add(SemanticConventions.AttributeDbNamespace, databaseName);
             }
 
-            if (options.EmitOldAttributes)
+            if (SqlClientTraceInstrumentationOptions.IsAnyTrue(SqlClientTraceInstrumentationOptions.EmitOldAttributesRoot))
             {
                 tags.Add(SemanticConventions.AttributeDbName, databaseName);
             }

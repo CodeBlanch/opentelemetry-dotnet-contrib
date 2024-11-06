@@ -18,7 +18,7 @@ internal sealed class SqlClientInstrumentation : IDisposable
     internal const string SqlClientTrimmingUnsupportedMessage = "Trimming is not yet supported with SqlClient instrumentation.";
 #endif
 #if NETFRAMEWORK
-    private readonly SqlEventSourceListener sqlEventSourceListener;
+    private static readonly SqlEventSourceListener SqlEventSourceListener;
 #else
     private static readonly HashSet<string> DiagnosticSourceEvents =
     [
@@ -30,11 +30,27 @@ internal sealed class SqlClientInstrumentation : IDisposable
         "Microsoft.Data.SqlClient.WriteCommandError"
     ];
 
-    private readonly Func<string, object?, object?, bool> isEnabled = (eventName, _, _)
+    private static readonly Func<string, object?, object?, bool> IsEnabled = (eventName, _, _)
         => DiagnosticSourceEvents.Contains(eventName);
 
-    private readonly DiagnosticSourceSubscriber diagnosticSourceSubscriber;
+    private static readonly DiagnosticSourceSubscriber DiagnosticSourceSubscriber;
 #endif
+
+    private readonly IDisposable? unapply;
+
+    static SqlClientInstrumentation()
+    {
+#if NETFRAMEWORK
+        SqlEventSourceListener = new SqlEventSourceListener();
+#else
+        DiagnosticSourceSubscriber = new DiagnosticSourceSubscriber(
+           name => new SqlClientDiagnosticListener(name),
+           listener => listener.Name == SqlClientDiagnosticListenerName,
+           IsEnabled,
+           SqlClientInstrumentationEventSource.Log.UnknownErrorProcessingEvent);
+        DiagnosticSourceSubscriber.Subscribe();
+#endif
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SqlClientInstrumentation"/> class.
@@ -46,25 +62,11 @@ internal sealed class SqlClientInstrumentation : IDisposable
     public SqlClientInstrumentation(
         SqlClientTraceInstrumentationOptions? options = null)
     {
-#if NETFRAMEWORK
-        this.sqlEventSourceListener = new SqlEventSourceListener(options);
-#else
-        this.diagnosticSourceSubscriber = new DiagnosticSourceSubscriber(
-           name => new SqlClientDiagnosticListener(name, options),
-           listener => listener.Name == SqlClientDiagnosticListenerName,
-           this.isEnabled,
-           SqlClientInstrumentationEventSource.Log.UnknownErrorProcessingEvent);
-        this.diagnosticSourceSubscriber.Subscribe();
-#endif
+        this.unapply = options?.Apply();
     }
 
-    /// <inheritdoc/>
     public void Dispose()
     {
-#if NETFRAMEWORK
-        this.sqlEventSourceListener?.Dispose();
-#else
-        this.diagnosticSourceSubscriber?.Dispose();
-#endif
+        this.unapply?.Dispose();
     }
 }
