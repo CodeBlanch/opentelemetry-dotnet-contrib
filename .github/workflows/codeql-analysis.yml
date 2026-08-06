@@ -43,4 +43,4 @@ jobs:
         run: dotnet pack opentelemetry-dotnet-contrib.proj --configuration Release
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@28deaeda66b76a05916b6923827895f2b14ab387 # v3.28.16
+        uses: github/codeql-action/analyze@d1ba80a13dd99fba24a470575428917156a28b43 # v4.37.5
